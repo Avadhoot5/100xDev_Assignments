@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 const adminSecretKey = "ke2ySecretAdmin";
 
 // User Secret Key 
-const userSecretKey = "ke2ySecretAdmin";
+const userSecretKey = "secretKeyUser";
 
 // Admin Auth Token
 const adminJWt = (user) => {
