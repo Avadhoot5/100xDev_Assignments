@@ -2,6 +2,9 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const app = express();
+const cors = require('cors');
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -38,6 +41,12 @@ const authenticateJwt = (req, res, next) => {
     res.sendStatus(401);
   }
 };
+
+app.get("/admin/me", authenticateJwt, (req, res) => {
+  res.json({
+    email: req.user.username
+  })
+})
 
 // Admin routes
 app.post('/admin/signup', (req, res) => {
@@ -87,6 +96,16 @@ app.put('/admin/courses/:courseId', authenticateJwt, (req, res) => {
 
 app.get('/admin/courses', authenticateJwt, (req, res) => {
   res.json({ courses: COURSES });
+});
+
+// fetching single course
+app.get('/admin/courses/:courseId', authenticateJwt, (req, res) => {
+  const course = COURSES.find(c => c.id === parseInt(req.params.courseId));
+  if (course) {
+    res.json({ courses: course });
+  } else {
+    res.status(404).json({ message: 'Course not found' });  
+  }
 });
 
 // User routes
