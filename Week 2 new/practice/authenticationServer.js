@@ -29,97 +29,74 @@
   Testing the server - run `npm run test-authenticationServer` command in terminal
  */
 
-const express = require("express")
-const PORT = 3000;
-const app = express();
-const bodyParser = require('body-parser');
-// write your logic here, DONT WRITE app.listen(3000) when you're running tests, the tests will automatically start the server
-
-app.use(bodyParser.json());
-
-let userData = [];
-
-// find element and index in array
-function findIndex(arr, username) {
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].username === username) {
-      return i;
+  const express = require("express");
+  const app = express();
+  const port = 3000;
+  
+  app.use(express.json());
+  
+  let users = [];
+  
+  console.log(users);
+  app.post('/signup', (req, res) => {
+    const {username, password, firstName, lastName} = req.body;
+    let userId = new Date().getTime();
+    let userDetails = {
+      userId, username, password, firstName, lastName
     }
-  }
-  return -1;
-}
-
-// 1. POST /signup - User Signup
-
-app.post('/signup', (req, res) => {
-  const userDetails = {
-    id: Math.floor(Math.random() * 100000),
-    username: req.body.username,
-    password: req.body.password,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName
-  };
-  let userExists = findIndex(userData, userDetails.username);
-  if (userExists !== -1) {
-    res.status(400).send();
-  } else {
-    userData.push(userDetails);
-    res.status(201).send();
-  }
-})
-
-// 2. POST /login - User Login
-
-app.post('/login', (req, res) => {
-  let basicDetails = [];
-  const userDetails = {
-    username: req.body.username,
-    password: req.body.password
-  }
-  let userExists = findIndex(userData, userDetails.username);
-  if (userExists === -1) {
-    res.status(401).send("Username not found");
-  } else {
-    if (userDetails.password !== userData[userExists].password) {
-      res.status(401).send("Wrong password");
+    let userExists = users.find((a) => a.username === username);
+    if (userExists) {
+      res.status(400).send("username already exists");
+    } else {
+      users.push(userDetails);
+      res.status(201).json("User created sucessfully");
     }
-    let obj = {
-      "id": userData[userExists].id,
-      "firstName": userData[userExists].firstName,
-      "lastName": userData[userExists].lastName
+  })
+  
+  app.post('/login', (req, res) => {
+    const {username, password} = req.body;
+    let userExists = users.find((a) => a.username === username && a.password === password);
+    if (userExists) {
+      res.status(200).json({
+        "firstName": userExists.firstName,
+        "lastName": userExists.lastName
+      });
+    } else {
+      res.status(401).send("Unauthorized User");
     }
-    basicDetails.push(obj);
-    res.json(basicDetails);
-  }
-})
-
-// 3. GET /data - Fetch all user's names and ids from the server (Protected route)
-// Description: Gets details of all users like firstname, lastname and id in an array format. Returned object should have a key called users which contains the list of all users with their email/firstname/lastname.
-// The users username and password should be fetched from the headers and checked before the array is returned
-// Response: 200 OK with the protected data in JSON format if the username and password in headers are valid, or 401 Unauthorized if the username and password are missing or invalid.
-// Example: GET http://localhost:3000/data
-
-app.get('/data', (req, res) => {
-  // let basicDetails = [];
-  const userDetails = {
-    username: req.headers.username,
-    password: req.headers.password
-  }
-  let userExists = findIndex(userData, userDetails.username);
-  if (userExists === -1) {
-    res.status(401).send("Username not found");
-  } else {
-    if (userDetails.password !== userData[userExists].password) {
-      res.status(401).send("Wrong password");
+  })
+  
+  // 3. GET /data - Fetch all user's names and ids from the server (Protected route)
+  // Description: Gets details of all users like firstname, lastname and id in an array format.
+  //  Returned object should have a key called users which contains the list of all users with their email/firstname/lastname.
+  // The users username and password should be fetched from the headers and checked before the array is returned
+  // Response: 200 OK with the protected data in JSON format if the username and password in headers are valid, or 401 Unauthorized if the username and password are missing or invalid.
+  // Example: GET http://localhost:3000/data
+  
+  app.get('/data', (req, res) => {
+    let userDetails = [];
+    const {username, password} = req.headers;
+    let userExists = users.find((a) => a.username === username && a.password === password);
+    if (userExists) {
+      users.forEach((user) => {
+        userDetails.push({
+          "user": [{
+            "userId": user.userId,
+            "firstName": user.firstName,
+            "lastName": user.lastName
+          }]
+        })
+      })
+      res.status(200).json(userDetails);
+    } else {
+      res.status(401).send("Unauthorized User");
     }
-    // basicDetails.push(obj);
-    res.json(userData);
-  }
-})
-
-
-app.listen(PORT, () => {
-  console.log("App listening on port 3000");
-})
-
-module.exports = app;
+  })
+  
+  
+  app.listen(port, () => {
+    console.log(`App listening on ${port}`);
+  })
+  
+  module.exports = app;
+  
