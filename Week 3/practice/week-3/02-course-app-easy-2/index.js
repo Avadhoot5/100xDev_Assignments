@@ -16,16 +16,16 @@ const userVerify = (user) => {
 }
 
 const adminJWt = (admin) => {
-  const payload = {"username": admin.username};
+  const payload = {username: admin.username};
   return jwt.sign(payload, adminSecretKey, { expiresIn: '1h' });
 }
 
 const adminVerify = (req, res, next) => {
-  const auth = req.headers.Authorization;
+  const auth = req.headers.authorization;
   const token = auth.split(" ")[1];
   jwt.verify(token, adminSecretKey, (err, user) => {
     if (err) {
-      res.status(403);
+      return res.status(403).send("Admin authorization failed");
     } else {
       req.user = user;
       next();
@@ -48,30 +48,54 @@ const userJWT = (req, res, next) => {
 app.post('/admin/signup', (req, res) => {
   // logic to sign up admin
   const admin = req.body;
-  const adminExists = ADMINS.find((a) => a.username === username);
+  const adminExists = ADMINS.find((a) => a.username === admin.username);
   if (adminExists) {
     res.json("Admin already present");
   } else {
     ADMINS.push(admin);
     let token = adminJWt(admin);
-    res.json({'message': 'User created successfully', 'token': token})
+    res.json({'message': 'Admin created successfully', 'token': token})
   }
 });
 
 app.post('/admin/login', (req, res) => {
   // logic to log in admin
+  const admin = req.headers;
+  const adminExists = ADMINS.find((a) => a.username === admin.username);
+  if (adminExists) {
+    let token = adminJWt(admin);
+    res.json({'message': 'Logged in successfully', 'token': token})
+  } else {
+    res.status(403).json("Admin authorization failed");
+  }
 });
 
-app.post('/admin/courses', (req, res) => {
+app.post('/admin/courses', adminVerify, (req, res) => {
   // logic to create a course
+  const courseId = new Date().getTime();
+  const course = {courseId, ...req.body};
+  if (course) {
+    COURSES.push(course);
+    res.json({'message': 'Course created successfully', 'id': courseId});
+  }
 });
 
-app.put('/admin/courses/:courseId', (req, res) => {
+app.put('/admin/courses/:courseId', adminVerify, (req, res) => {
   // logic to edit a course
+  const courseId = parseInt(req.params.courseId);
+  const courseUpdate = {...req.body};
+  const course = COURSES.find((c) => c.courseId === courseId);
+  if (course) {
+    Object.assign(course, courseUpdate);
+    res.json('Course updated successfully');
+  } else {
+    res.send("course id not found");
+  }
 });
 
-app.get('/admin/courses', (req, res) => {
+app.get('/admin/courses', adminVerify, (req, res) => {
   // logic to get all courses
+  res.json(COURSES);
 });
 
 // User routes
