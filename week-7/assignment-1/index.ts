@@ -6,7 +6,8 @@ import authRoutes from './routes/auth';
 import todoRoutes from './routes/todo';
 let cors = require('cors')
 import dotenv from 'dotenv';
-dotenv.config(); 
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 app.use(cors());
 app.use(express.json());
