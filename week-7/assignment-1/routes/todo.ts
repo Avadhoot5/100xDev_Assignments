@@ -1,8 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
-import middleware from '../middleware/';
-const {  authenticateJwt, SECRET } = middleware;
-import db from '../db';
-const { Todo } = db;
+import { authenticateJwt, SECRET } from '../middleware/';
+import { Todo } from '../db';
 
 const router = express.Router();
 
