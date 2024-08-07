@@ -25,11 +25,17 @@ const Signup = () => {
     return (
         <div style={{justifyContent: "center", display: "flex", width: "100%"}}>
             <div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 10
+                }}>
                 <h2>Signup</h2>
                 <input type='text' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' />
                 <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' />
                 Already signed up? <Link to="/login">Login</Link>
                 <button onClick={handleSignup}>Signup</button>
+                </div>
             </div>
         </div>
     );

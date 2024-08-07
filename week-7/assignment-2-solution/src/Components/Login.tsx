@@ -27,10 +27,23 @@ const Login = () => {
         <div style={{justifyContent: "center", display: "flex", width: "100%"}}>
             <div>
                 <h2>Login</h2>
-                <input type='text' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' />
-                <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' />
-                New here? <Link to="/signup">Signup</Link>
-                <button onClick={handleLogin}>Login</button>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 10
+                }}>
+                    <input type='text' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' />
+                    <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' />
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: 10
+                    }}>
+                        <div>New here?</div>
+                            <Link to="/signup">Signup</Link>
+                    </div>
+                    <button onClick={handleLogin}>Login</button>
+                </div>
             </div>
         </div>
     );

@@ -2,35 +2,15 @@ import { useState, useEffect } from 'react';
 import { authState } from '../store/authState.ts';
 import {useRecoilValue} from "recoil";
 import { useNavigate } from 'react-router-dom';
+import useTodos from '../Hooks/useTodos.tsx';
 
 const TodoList = () => {
 
-    interface Todo {
-        _id: string,
-        title: string,
-        description: string,
-        done: boolean
-    }
-
-    type TodoArray = Todo[];
-
-    const [todos, setTodos] = useState<TodoArray>([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const authStateValue = useRecoilValue(authState);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const getTodos = async () => {
-            const response = await fetch('http://localhost:3000/todo/todos', {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-            });
-            // Todo: Create a type for the response that you get back from the server
-            const data : Todo[] = await response.json();
-            setTodos(data);
-        };
-        getTodos();
-    }, []);
+    const {loading, todos, setTodos} = useTodos();
 
     const addTodo = async () => {
         const response = await fetch('http://localhost:3000/todo/todos', {
@@ -63,9 +43,16 @@ const TodoList = () => {
                 </div>
             </div>
             <h2>Todo List</h2>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                maxWidth: '30%'
+            }}>
             <input type='text' value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Title' />
             <input type='text' value={description} onChange={(e) => setDescription(e.target.value)} placeholder='Description' />
-            <button onClick={addTodo}>Add Todo</button>
+            <button style={{width: 80}} onClick={addTodo}>Add Todo</button>
+            </div>
             {todos.map((todo) => (
                 <div key={todo._id}>
                     <h3>{todo.title}</h3>

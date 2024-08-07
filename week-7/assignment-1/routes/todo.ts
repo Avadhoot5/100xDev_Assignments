@@ -1,17 +1,28 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { authenticateJwt, SECRET } from '../middleware/';
 import { Todo } from '../db';
+import {z} from "zod";
 
 const router = express.Router();
 
-type Input = {
-  title: string,
-  description: string,
-  done: boolean
-}
+// type Input = {
+//   title: string,
+//   description: string,
+//   done: boolean
+// }
+
+const InputProps = z.object({
+  title: z.string().min(5).max(100),
+  description: z.string().min(5).max(300)
+})
 
 router.post('/todos', authenticateJwt, (req: Request, res: Response) => {
-  const { title, description }: Input = req.body as Input;
+  const parsedInput = InputProps.safeParse(req.body);
+  if (!parsedInput.success) {
+    return res.status(411).json({message: parsedInput.error});
+  }
+  
+  const { title, description } = parsedInput.data;
   const done = false;
   const userId = req.headers["userId"];
 

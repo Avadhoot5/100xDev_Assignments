@@ -2,16 +2,28 @@ import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { authenticateJwt, SECRET } from '../middleware/';
 import { User } from '../db';
+import {z} from "zod";
 
 const router = express.Router();
 
-type Input = {
-  username: string,
-  password: string
-}
+// type Input = {
+//   username: string,
+//   password: string
+// }
+
+let InputProps = z.object({
+  username: z.string().min(8).max(60),
+  password: z.string().min(8).max(60)
+})
 
   router.post('/signup', async (req: Request, res: Response) => {
-    const { username, password } : Input = req.body as Input;
+    const parsedInput = InputProps.safeParse(req.body);
+    if (!parsedInput.success) {
+      return res.status(411).json({message: parsedInput.error})
+    }
+    const {username, password} = parsedInput.data;
+
+    // const { username, password } : Input = req.body as Input;
     const user = await User.findOne({ username });
     if (user) {
       res.status(403).json({ message: 'User already exists' });
@@ -24,7 +36,14 @@ type Input = {
   });
   
   router.post('/login', async (req: Request, res: Response) => {
-    const { username, password }: Input = req.body as Input;
+
+    const parsedInput = InputProps.safeParse(req.body);
+    if (!parsedInput.success) {
+      return res.status(411).json({message: parsedInput.error})
+    }
+    const {username, password} = parsedInput.data;
+
+    // const { username, password }: Input = req.body as Input;
     const user = await User.findOne({ username, password });
     if (user) {
       const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' });
