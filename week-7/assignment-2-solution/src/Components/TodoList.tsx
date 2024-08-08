@@ -33,7 +33,7 @@ const TodoList = () => {
 
     return (
         <div>
-            <div style={{display: "flex"}}>
+            <div style={{display: "flex", justifyContent: "center"}}>
                 <h2>Welcome {authStateValue.username}</h2>
                 <div style={{marginTop: 25, marginLeft: 20}}>
                     <button onClick={() => {
@@ -46,11 +46,12 @@ const TodoList = () => {
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
+                justifyContent: "center",
                 gap: 10,
                 maxWidth: '30%'
             }}>
-            <input type='text' value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Title' />
-            <input type='text' value={description} onChange={(e) => setDescription(e.target.value)} placeholder='Description' />
+            <input style={{width: '50%'}} type='text' value={title} onChange={(e) => setTitle(e.target.value)} placeholder='Title' />
+            <input style={{width: '50%'}} type='text' value={description} onChange={(e) => setDescription(e.target.value)} placeholder='Description' />
             <button style={{width: 80}} onClick={addTodo}>Add Todo</button>
             </div>
             {todos.map((todo) => (

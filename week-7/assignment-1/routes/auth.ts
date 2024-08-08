@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { authenticateJwt, SECRET } from '../middleware/';
 import { User } from '../db';
-import {z} from "zod";
+import {InputProps} from '@avadhoot5/common';
 
 const router = express.Router();
 
@@ -11,10 +11,7 @@ const router = express.Router();
 //   password: string
 // }
 
-let InputProps = z.object({
-  username: z.string().min(8).max(60),
-  password: z.string().min(8).max(60)
-})
+
 
   router.post('/signup', async (req: Request, res: Response) => {
     const parsedInput = InputProps.safeParse(req.body);
