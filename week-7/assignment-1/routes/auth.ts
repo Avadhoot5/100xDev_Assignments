@@ -11,8 +11,6 @@ const router = express.Router();
 //   password: string
 // }
 
-
-
   router.post('/signup', async (req: Request, res: Response) => {
     const parsedInput = InputProps.safeParse(req.body);
     if (!parsedInput.success) {
