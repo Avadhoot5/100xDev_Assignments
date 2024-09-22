@@ -6,11 +6,52 @@
     <title>Todo</title>
     <script>
 
+        async function deleteTodo(id) {
+            const data = await fetch(`http://localhost:3000/todos/${id}`, {
+                method: 'DELETE'
+            })
+        }        
+
+        async function getTodos() {
+            const todos = await fetch('http://localhost:3000/todos', {
+                method:'GET'
+            });
+            const data = await todos.json();
+
+            const homeElement = document.getElementById('home');
+            homeElement.innerHTML = '';
+
+            data.forEach((todo) => {
+                const childElement = document.createElement('div');
+                const titleElement = document.createElement('span');
+                titleElement.innerHTML = todo.title;
+                const descriptionElement = document.createElement('span');
+                descriptionElement.innerHTML = todo.description;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = 'Delete';
+
+                childElement.appendChild(titleElement);               
+                childElement.appendChild(descriptionElement);
+                childElement.appendChild(deleteButton);
+                homeElement.appendChild(childElement);   
+                deleteButton.setAttribute('onclick', `deleteTodo(${todo.id})`);
+            })
+        }
+        getTodos();
+
         function handleSubmit() {
             const titleValue = document.getElementById('title').value;
             const descValue = document.getElementById('description').value;
-               
+            fetch('http://localhost:3000/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"title": titleValue, "description": descValue})
+            })
         }
+
 
     </script>
 </head>
@@ -27,6 +68,10 @@
         <div>
             <button onClick="handleSubmit()" type="submit">Add Todo</button>
         </div>
+    </div>
+    <h2>Todo List</h2>
+    <div id="home">
+
     </div>
 </body>
 </html>
