@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo</title>
+    <script>
+
+        function handleSubmit() {
+            const titleValue = document.getElementById('title').value;
+            const descValue = document.getElementById('description').value;
+            
+        }
+
+    </script>
+</head>
+<body>
+    <div style="display:flex; gap: 10px; flex-direction: column;">
+        <div>
+            <label for="">Title</label>
+            <input type="text" name="title" id="title">
+        </div>
+        <div>
+            <label for="">Description</label>
+            <input type="text" name="description" id="description">
+        </div>
+        <div>
+            <button onClick="handleSubmit()" type="submit">Add Todo</button>
+        </div>
+    </div>
+</body>
+</html>
