@@ -20,6 +20,34 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const PORT = 3000;
 
+let fileContent = [];
+const filePath = path.join(__dirname, 'files');
+
+fs.readdir('./files', 'UTF-8', (err, data) => {
+  data.forEach((val) => fileContent.push({'fileName': val}))
+})
+
+app.get('/files', (req, res) => {
+  return res.status(200).json(fileContent);
+})
+
+app.get('/file/:filename', (req, res) => {
+  const fileName = req.params.filename;
+  const fileExists = fileContent.filter((a) => a.fileName === fileName);
+
+  if (fileExists) {
+    filePath + '/' + fileName
+    const file = path.join(`${filePath}/${fileName}`);
+    return res.status(200).sendFile(file);
+  } else {
+    return res.status(404).json({message: 'File not found'});
+  }
+})
+
+app.listen(PORT, () => {
+  console.log(`App listening on PORT ${PORT}`);
+})
 
 module.exports = app;
