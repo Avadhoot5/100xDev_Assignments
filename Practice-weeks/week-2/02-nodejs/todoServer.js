@@ -84,8 +84,9 @@ app.post('/todos', (req, res) => {
       title, description, id
     }
     todos.push(todo);
+    res.status(201).json({id: id});
     fs.writeFile('data.json', JSON.stringify(todos), 'UTF-8', (err, data) => {
-      if (data) return res.status(201).json({id: id});;
+      if (data) return;
     })
   })
 })
