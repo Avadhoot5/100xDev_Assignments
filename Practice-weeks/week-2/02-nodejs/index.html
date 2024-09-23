@@ -47,34 +47,32 @@
         async function handleSubmit() {
             const titleValue = document.getElementById('title').value;
             const descValue = document.getElementById('description').value;
-            const repsonse = fetch('http://localhost:3000/todos', {
+            const response = await fetch('http://localhost:3000/todos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({"title": titleValue, "description": descValue})
             })
-            
+            const data = await response.json();
 
             const homeElement = document.getElementById('home');
 
-            data.forEach((todo) => {
-                const childElement = document.createElement('div');
-                const titleElement = document.createElement('span');
-                titleElement.innerHTML = todo.title;
-                const descriptionElement = document.createElement('span');
-                descriptionElement.innerHTML = todo.description;
+            const childElement = document.createElement('div');
+            const titleElement = document.createElement('span');
+            titleElement.innerHTML = titleValue;
+            const descriptionElement = document.createElement('span');
+            descriptionElement.innerHTML = descValue;
 
-                const deleteButton = document.createElement('button');
-                deleteButton.innerHTML = 'Delete';
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'Delete';
 
-                childElement.id = todo.id;
-                childElement.appendChild(titleElement);               
-                childElement.appendChild(descriptionElement);
-                childElement.appendChild(deleteButton);
-                homeElement.appendChild(childElement);   
-                deleteButton.setAttribute('onclick', `deleteTodo(${todo.id})`);
-            })
+            childElement.id = data.id;
+            childElement.appendChild(titleElement);               
+            childElement.appendChild(descriptionElement);
+            childElement.appendChild(deleteButton);
+            homeElement.appendChild(childElement);   
+            deleteButton.setAttribute('onclick', `deleteTodo(${data.id})`);
         }
 
 
