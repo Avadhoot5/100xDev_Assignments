@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
+require('dotenv').config();
+const {Admin, User, Course} = require('./database');
 
 app.use(express.json());
 
-let ADMINS = [];
-let USERS = [];
-let COURSES = [];
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Database Connected'))
+  .catch((error) => console.log('Not connected'));
 
 // Admin routes
 app.post('/admin/signup', (req, res) => {
