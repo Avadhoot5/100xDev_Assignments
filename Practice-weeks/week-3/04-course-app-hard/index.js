@@ -59,7 +59,7 @@ app.post('/admin/login', async (req, res) => {
   }
   if (admin) {
     const token = jwt.sign({username, role: 'admin'}, process.env.SECRET, {expiresIn: '1h'});
-    res.status(200).json({message: 'Admin created sucessfully', token: token});
+    res.status(200).json({message: 'Admin Logged in', token: token});
   }
 });
 
@@ -87,24 +87,66 @@ app.get('/admin/courses', authVerify, async (req, res) => {
 });
 
 // User routes
-app.post('/users/signup', (req, res) => {
+app.post('/users/signup', async (req, res) => {
   // logic to sign up user
+  const {username, password} = req.body;
+  const user = await User.findOne({username});
+  if (user) {
+    return res.status(404).json({message: 'User already present'});
+  }
+  if (!user) {
+    const newUser = new User({username, password});
+    await newUser.save();
+    const token = jwt.sign({username, role: 'user'}, process.env.SECRET, {expiresIn: '1h'});
+    res.status(200).json({message: 'User created sucessfully', token: token});
+  }
 });
 
-app.post('/users/login', (req, res) => {
+app.post('/users/login', async (req, res) => {
   // logic to log in user
+  const { username, password } = req.headers;
+  const user = await User.findOne({username, password});
+  if (!user) {
+    return res.status(404).json({message: 'Incorrect credentials'});
+  }
+  if (user) {
+    const token = jwt.sign({username, role: 'user'}, process.env.SECRET, {expiresIn: '1h'});
+    res.status(200).json({message: 'User Logged in', token: token});
+  }
 });
 
-app.get('/users/courses', (req, res) => {
+app.get('/users/courses', authVerify, async (req, res) => {
   // logic to list all courses
+  const courses = await Course.find({});
+  return res.status(200).json(courses);
 });
 
-app.post('/users/courses/:courseId', (req, res) => {
+app.post('/users/courses/:courseId', authVerify, async (req, res) => {
   // logic to purchase a course
+  const course = await Course.findById(req.params.courseId);
+  if (course) {
+    const user = await User.findOne({username: req.user.username});
+    if (user) {
+      user.purchasedCourses.push(course);
+      await user.save();
+      res.status(200).json({message: 'Course purchased sucessfully'});
+    } else {
+      res.status(400).json({message: 'User not found'});
+    }
+  } else {
+    res.status(404).json({message: 'Course not found'});
+  }
+
 });
 
-app.get('/users/purchasedCourses', (req, res) => {
+app.get('/users/purchasedCourses', authVerify, async (req, res) => {
   // logic to view purchased courses
+  const user = await User.findOne({username: req.user.username}).populate('purchasedCourses');
+  if (user) {
+    res.status(200).json({'purchasedCourses': user.purchasedCourses || []});
+  } else {
+    res.status(404).json({message: 'user not found'});
+  }
 });
 
 app.listen(3000, () => {
