@@ -8,7 +8,14 @@
 */
 
 function isAnagram(str1, str2) {
-
+  let s = (str1) => {
+    return str1.toLowerCase().split("").sort().join();
+  }
+  let t = (str2) => {
+    return str2.toLowerCase().split("").sort().join();
+  }
+  return (s(str1) === t(str2));
 }
+
 
 module.exports = isAnagram;
