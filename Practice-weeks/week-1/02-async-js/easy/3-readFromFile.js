@@ -5,3 +5,21 @@
 // Try to do an expensive operation below the file read and see how it affects the output. 
 // Make the expensive operation more and more expensive and see how it affects the output. 
 
+const fs = require('fs');
+
+
+
+fs.readFile('test.txt', 'UTF-8', (err, data) => {
+    if (err) return err;
+    console.log(data);
+})
+
+function complextTask(n) {
+    let ans = 0;
+    for (let i = 0; i <= n; i++) {
+        ans += i;
+    }
+    return 'Result is ' + ans;
+}
+
+console.log(complextTask(1200000000));
