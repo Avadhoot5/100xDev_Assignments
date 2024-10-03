@@ -34,4 +34,65 @@ const PORT = 3000;
 const app = express();
 // write your logic here, DONT WRITE app.listen(3000) when you're running tests, the tests will automatically start the server
 
+app.use(express.json());
+
+let USERS = [];
+
+
+app.post('/signup', (req, res) => {
+  const id = new Date().getTime();
+  const newUser = {id, ...req.body};
+  const userExists = USERS.find((a) => a.username === req.body.username);
+  
+  if (!userExists) {
+    USERS.push(newUser);
+    res.status(201).json({message: 'User created sucess!'});
+  } else {
+    res.status(400).json({message: 'User already present'});
+  }
+
+})
+
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const userValid = USERS.find((user) => user.username === username && user.password === password);
+
+  if (userValid) {
+    res.status(200).json({UserDetails: {
+      firstName: userValid.firstName,
+      lastName: userValid.lastName,
+      id: userValid.id
+    }})
+  } else {
+    res.status(401).json({message: 'Incorrect Credentials'});
+  }
+})
+
+app.get('/data', (req, res) => {
+
+  const { username, password } = req.headers;
+  const userValid = USERS.find((user) => user.username === username && user.password === password);
+
+  if (userValid) {
+    const allUsers = [];
+    USERS.forEach((user) => {
+      allUsers.push({user: [
+        user.firstName,
+        user.lastName,
+        user.id
+      ]})
+    })
+    
+    res.status(200).json(allUsers);
+  } else {
+    res.status(401).json({message: 'Incorrect Credentials'});
+  }
+
+})
+
+app.listen(PORT, () => {
+  console.log(`App listening on PORT ${PORT}`);
+})
+
 module.exports = app;
