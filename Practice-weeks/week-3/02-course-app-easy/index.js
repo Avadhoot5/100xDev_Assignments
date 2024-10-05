@@ -7,6 +7,16 @@ let ADMINS = [];
 let USERS = [];
 let COURSES = [];
 
+const adminAuth = (req, res, next) => {
+  const { username, password } = req.headers;
+  const adminValid = ADMINS.find((a) => a.username === username && a.password === password);
+  if (adminValid) {
+    next();
+  } else {
+    res.status(401).json({message: 'Invalid credentials'});
+  }
+}
+
 // Admin routes
 app.post('/admin/signup', (req, res) => {
   // logic to sign up admin
@@ -21,28 +31,42 @@ app.post('/admin/signup', (req, res) => {
 
 });
 
-app.post('/admin/login', (req, res) => {
+app.post('/admin/login', adminAuth, (req, res) => {
   // logic to log in admin
-  const { username, password } = req.headers;
-  const adminValid = ADMINS.find((a) => a.username === username && a.password === password);
-  if (adminValid) {
-    res.status(200).json({ message: 'Logged in successfully' });
-  } else {
-    res.status(401).json({message: 'Invalid credentials'});
-  }
+  res.status(200).json({ message: 'Logged in successfully' });
 });
 
-app.post('/admin/courses', (req, res) => {
+app.post('/admin/courses', adminAuth, (req, res) => {
   // logic to create a course
+  const id = new Date().getTime();
+  const courseAdd = {id, ...req.body};
+  COURSES.push(courseAdd);
+  res.status(201).json({message: 'Course created successfully', id: id});
 });
 
-app.put('/admin/courses/:courseId', (req, res) => {
+app.put('/admin/courses/:courseId', adminAuth, (req, res) => {
   // logic to edit a course
+  const courseId = parseInt(req.params.courseId);
+  const courseExists = COURSES.findIndex((a) => a.id === courseId);
+
+  if (courseExists !== -1 ) {
+    let courseUpdated = {
+      id: courseId,
+      ...req.body
+    }
+    COURSES[courseExists] = courseUpdated;
+    res.status(200).json({ message: 'Course updated successfully'});
+  } else {
+    res.status(400).json({ message: 'Course ID not found'});
+  }
+
 });
 
-app.get('/admin/courses', (req, res) => {
+app.get('/admin/courses', adminAuth, (req, res) => {
   // logic to get all courses
+  res.status(200).json({courses: COURSES});
 });
+
 
 // User routes
 app.post('/users/signup', (req, res) => {
