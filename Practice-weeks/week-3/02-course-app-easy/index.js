@@ -17,6 +17,17 @@ const adminAuth = (req, res, next) => {
   }
 }
 
+const userAth = (req, res, next) => {
+  const { username, password } = req.headers;
+  const user = USERS.find((a) => a.username === username && a.password === password);
+  if (user) {
+    req.user = user;
+    next();
+  } else {
+    res.status(401).json({message: 'Invalid credentials'});
+  }
+}
+
 // Admin routes
 app.post('/admin/signup', (req, res) => {
   // logic to sign up admin
@@ -71,22 +82,52 @@ app.get('/admin/courses', adminAuth, (req, res) => {
 // User routes
 app.post('/users/signup', (req, res) => {
   // logic to sign up user
+  const { username, password } = req.body;
+  const userExists = USERS.find((a) => a.username === username);
+  if (userExists) {
+    res.status(400).json({message: 'User already present'});
+  } else {
+    USERS.push({username, password, purchasedCourses: []});
+    res.status(201).json({message: 'User created successfully'});
+  }
+
 });
 
-app.post('/users/login', (req, res) => {
+app.post('/users/login', userAth, (req, res) => {
   // logic to log in user
+  res.status(200).json({ message: 'Logged in successfully' });
+  res.status(200).json({courses: COURSES});
+
 });
 
-app.get('/users/courses', (req, res) => {
+app.get('/users/courses', userAth, (req, res) => {
   // logic to list all courses
+  res.status(200).json({courses: COURSES});
+
 });
 
-app.post('/users/courses/:courseId', (req, res) => {
+app.post('/users/courses/:courseId', userAth, (req, res) => {
   // logic to purchase a course
+  const courseId = parseInt(req.params.courseId);
+  const course = COURSES.findIndex((a) => a.id === courseId);
+  
+  if (course !== -1) {
+    req.user.purchasedCourses.push(COURSES[course]);
+    res.status(200).json({ message: 'Course purchased successfully'});
+  } else {
+    res.status(400).json({ message: 'Course ID not found'});
+  }
+
 });
 
-app.get('/users/purchasedCourses', (req, res) => {
+app.get('/users/purchasedCourses', userAth, (req, res) => {
   // logic to view purchased courses
+  if (req.user.purchasedCourses.length > 0) {
+    res.status(200).json({purchasedCourses: req.user.purchasedCourses});
+  } else {
+    res.status(400).json({message: 'No purchased coursese'});
+  }
+
 });
 
 app.listen(3000, () => {
