@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import Todo from './components/Todo';
 
 function useTodos() {
   const [todos, setTodos] = useState([]);
@@ -62,22 +63,6 @@ function App() {
   )
 }
 
-function Todo(props) {
-  return <div>
-    <b>Title:</b> {props.title}
-    <br />
-    <b>Desc:</b> {props.description}
-    <button onClick={() => {
-          fetch("http://localhost:3000/todos/:id", {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-            })
-    }}>Delete</button>
-    <br />
-  </div>
-}
 
 // above Todo component is linked to week 2 - todoserver.js file 
 
