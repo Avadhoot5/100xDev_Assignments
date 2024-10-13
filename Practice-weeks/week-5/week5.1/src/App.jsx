@@ -1,5 +1,6 @@
 import Signin from "./components/Signin"
 import Signup from "./components/Signup"
+import Appbar from "./components/Appbar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
   return (
     <>
       <Router>
+          <Appbar/>
         <Routes>
           <Route path="/signup" element={<Signup/>}></Route>
           <Route path="/signin" element={<Signin/>}></Route>

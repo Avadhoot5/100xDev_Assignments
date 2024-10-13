@@ -6,10 +6,11 @@ const Signup = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+    const [error, setError] = useState(false);
 
     const handleSignup = async () =>{ 
         try {
+            setError(true);
             const response = await fetch(`${BASE_URL}signup`, {
                 method: 'POST',
                 headers: {
@@ -18,13 +19,14 @@ const Signup = () => {
                 body: JSON.stringify({email, password})
             });
             const data = await response.json();
-            console.log(data);
             if (response.ok) {
                 console.log(data.message);
+                setError(false);
             }
         }
         catch (error) {
-                console.log(error);
+            setError(true);
+            console.log(error);
         }
     }
 
@@ -46,6 +48,7 @@ const Signup = () => {
                 onChange={(e) => {
                     setPassword(e.target.value);
                 }}/>
+                {error && <div>Please use different credentials</div>}
             </div>
         </EmailPass>
         <Button onClick={handleSignup}>Signup</Button>
