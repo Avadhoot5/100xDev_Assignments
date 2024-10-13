@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { BASE_URL } from '../App';
 import { useState } from 'react';
+import Button from '@mui/material/Button';
 
 const Signup = () => {
 
@@ -33,7 +34,7 @@ const Signup = () => {
   return (<>
 
     <TopHeading>
-        <h3>Welcome Back! Signup Below.</h3>
+        <h3>Welcome! Signup Below.</h3>
     </TopHeading>
     <MainCard>
         <EmailPass>
@@ -50,8 +51,10 @@ const Signup = () => {
                 }}/>
                 {error && <div>Please use different credentials</div>}
             </div>
+            <div>
+                <Button onClick={handleSignup} variant="contained">Signup</Button>
+            </div>
         </EmailPass>
-        <Button onClick={handleSignup}>Signup</Button>
     </MainCard>
 
   </>)
@@ -76,6 +79,7 @@ const MainCard = styled.div`
     justify-content: center;
     border: 1px solid black;
     border-radius: 5px;
+    background-color: white;
 
 `
 
@@ -90,22 +94,4 @@ const EmailPass = styled.div`
     flex-direction: column;
     gap: 10px;
     margin-bottom: 10px;
-`
-
-const Button = styled.button`
-    all: unset;
-    border: 1px solid black;
-    border-radius: 4px;
-    background-color: lightgreen;
-    color: black;
-    font-weight: 500px;
-    font-size: 18px;
-    width: 10vw;
-    padding: 5px 10px;
-
-    display: flex;
-    justify-content: center;
-
-    cursor: pointer;
-
 `

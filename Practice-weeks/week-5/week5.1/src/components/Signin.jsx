@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { BASE_URL } from '../App';
 import { useState } from 'react';
+import Button from '@mui/material/Button';
 
 const Signin = () => {
 
@@ -46,8 +47,11 @@ const Signin = () => {
                     setPassword(e.target.value);
                 }}/>
             </div>
+            <div>
+              <Button onClick={handleSignin} variant="contained">Signin</Button>
+            </div>
         </EmailPass>
-        <Button onClick={handleSignin}>Signin</Button>
+
     </MainCard>
 
   </>)
@@ -72,6 +76,7 @@ const MainCard = styled.div`
     justify-content: center;
     border: 1px solid black;
     border-radius: 5px;
+    background-color: white;
 
 `
 
@@ -86,22 +91,4 @@ const EmailPass = styled.div`
     flex-direction: column;
     gap: 10px;
     margin-bottom: 10px;
-`
-
-const Button = styled.button`
-    all: unset;
-    border: 1px solid black;
-    border-radius: 4px;
-    background-color: lightgreen;
-    color: black;
-    font-weight: 500px;
-    font-size: 18px;
-    width: 10vw;
-    padding: 5px 10px;
-
-    display: flex;
-    justify-content: center;
-
-    cursor: pointer;
-
 `
